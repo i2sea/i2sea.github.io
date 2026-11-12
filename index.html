@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 프로그램 모음</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1c2430; --sub:#5b6676; --line:#e1e6ec;
+    --accent:#0b6e8a; --accent-soft:#e3f2f6;
+    --c-civil:#8a5a0b; --c-civil-soft:#fbf0dd;
+    --c-wind:#0b6e8a; --c-wind-soft:#e3f2f6;
+    --c-hydro:#2c55b8; --c-hydro-soft:#e4ebfa;
+    --c-dash:#3d5a1e; --c-dash-soft:#e9f3df;
+    --ok:#2f7d32; --wip:#b26a00;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12161c; --card:#1b2129; --ink:#e7ecf2; --sub:#9aa6b5; --line:#2b333e;
+      --accent:#5cc3dd; --accent-soft:#16323b;
+      --c-civil:#e6b25c; --c-civil-soft:#33280f;
+      --c-wind:#5cc3dd; --c-wind-soft:#16323b;
+      --c-hydro:#8fb0f5; --c-hydro-soft:#1c2640;
+      --c-dash:#9fd36b; --c-dash-soft:#223014;
+      --ok:#7fcf83; --wip:#f0b45a;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;line-height:1.5}
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 20px 60px}
+  header h1{margin:0;font-size:26px;letter-spacing:-.5px}
+  header p{margin:6px 0 0;color:var(--sub);font-size:14px}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:24px 0 8px}
+  .search{flex:1 1 260px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--sub);padding:7px 13px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}
+  .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  section{margin-top:28px}
+  section h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px;color:var(--sub);font-weight:500}
+  section h2 .dot{width:10px;height:10px;border-radius:3px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;position:relative}
+  .card .top{display:flex;align-items:flex-start;gap:12px}
+  .icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;flex:none}
+  .icon svg{width:22px;height:22px}
+  .card h3{margin:0;font-size:16px;letter-spacing:-.3px}
+  .status{font-size:11.5px;font-weight:500;margin-top:2px}
+  .status.ok{color:var(--ok)} .status.wip{color:var(--wip)}
+  .desc{margin:0;color:var(--sub);font-size:13.5px}
+  .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+  .links a{font-size:12.5px;text-decoration:none;padding:6px 10px;border-radius:8px;border:1px solid var(--line);color:var(--ink);display:inline-flex;gap:5px;align-items:center}
+  .links a.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  @media (prefers-color-scheme: dark){.links a.primary{color:#0d1a1f}}
+  .links a:hover{filter:brightness(.95)}
+  .meta{font-size:11.5px;color:var(--sub)}
+  .civil .icon{background:var(--c-civil-soft);color:var(--c-civil)}
+  .hydro .icon{background:var(--c-hydro-soft);color:var(--c-hydro)}
+  .wind .icon{background:var(--c-wind-soft);color:var(--c-wind)}
+  .dash .icon{background:var(--c-dash-soft);color:var(--c-dash)}
+  .access{position:absolute;top:14px;right:14px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+  .access.pub{background:var(--c-dash-soft);color:var(--c-dash);border-color:transparent}
+  .access.soon{background:var(--c-civil-soft);color:var(--c-civil);border-color:transparent}
+  .access.me{color:var(--sub)}
+  .card h3{padding-right:78px}
+  .chip.pubf.on{background:var(--c-dash);border-color:var(--c-dash);color:var(--bg)}
+  .edit{position:absolute;bottom:14px;right:14px;border:1px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;font:inherit;font-size:12px;padding:4px 8px;cursor:pointer}
+  .edit:hover{color:var(--ink)}
+  .card.editable .links{padding-right:56px}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+  .modal.on{display:flex}
+  .dlg{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;width:min(460px,100%);display:flex;flex-direction:column;gap:12px}
+  .dlg h3{margin:0;font-size:16px}
+  .dlg label{font-size:12.5px;color:var(--sub);display:flex;flex-direction:column;gap:4px}
+  .dlg input,.dlg textarea,.dlg select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+  .dlg textarea{min-height:80px;resize:vertical}
+  .dlg .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+  .dlg .row .left{margin-right:auto}
+  .btn{font:inherit;font-size:13px;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:10px;font-size:13px;display:none;z-index:11}
+  .editnote{font-size:12px;color:var(--sub);margin-top:6px;display:none}
+  .card h3,.card .status,.card .desc,#pgTitle,#pgSub{white-space:pre-line}
+  body.public .priv,body.public .access{display:none!important}
+  body.public .card h3{padding-right:0}
+  .empty{color:var(--sub);font-size:14px;padding:30px 0;text-align:center;display:none}
+  footer{margin-top:40px;color:var(--sub);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-top:6px}
+  .legend b{font-weight:500;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div style="display:flex;align-items:center;gap:10px"><h1 id="pgTitle">내 프로그램 모음</h1><button class="edit" id="pgEdit" type="button" style="position:static;display:none">✏️ 편집</button></div>
+    <p id="pgSub">토목 설계 · 해상풍력 업무용으로 만든 도구와 대시보드를 한곳에서 엽니다.</p>
+    <div class="legend priv">
+      <span><b>열기</b> claude.ai 판 (내 작업용)</span>
+      <span><b>공개 주소</b> GitHub Pages 판 (다른 사람 공유용)</span>
+      <span><b>저장소</b> GitHub 소스</span>
+    </div>
+    <div class="legend priv">
+      <span><b style="color:var(--c-dash)">🌐 외부 공개</b> 주소만 알면 누구나 접속</span>
+      <span><b style="color:var(--c-civil)">⏳ 공개 예정</b> 공개판 준비 중</span>
+      <span><b>🔒 내 전용</b> 나만 접속 (claude.ai·비공개 저장소)</span>
+    </div>
+  </header>
+
+  <div class="bar">
+    <input class="search" id="q" type="search" placeholder="프로그램 이름이나 내용으로 찾기 (예: 옹벽, 풍황, 허가)">
+    <div class="chips" id="chips">
+      <button class="chip on" data-cat="all">전체</button>
+      <button class="chip" data-cat="civil">구조계산</button>
+      <button class="chip" data-cat="hydro">수리계산</button>
+      <button class="chip" data-cat="wind">풍력 발전량·배치</button>
+      <button class="chip" data-cat="dash">모니터링 대시보드</button>
+    </div>
+    <div class="chips">
+      <button class="chip pubf priv" id="pubf">🌐 외부 공개만 보기</button>
+    </div>
+  </div>
+
+  <div class="editnote" id="editnote">✏️ 편집 모드 — 이 화면(claude.ai)에서만 고칠 수 있고, 고친 내용은 어느 PC에서 열어도 같게 보입니다. 공개 주소에서는 읽기만 됩니다.</div>
+  <div id="sections"></div>
+  <div class="empty" id="empty">찾는 프로그램이 없습니다.</div>
+
+  <div class="modal" id="modal"><form class="dlg" id="dlg">
+    <h3 id="dlgTitle">편집</h3>
+    <label>제목<textarea id="fName" maxlength="80" rows="2" style="min-height:0"></textarea></label>
+    <label id="fSubWrap" style="display:none">설명<textarea id="fSub" maxlength="200"></textarea></label>
+    <div id="cardFields" style="display:flex;flex-direction:column;gap:12px"><label>상태 색<select id="fStatus"><option value="ok">● 녹색 — 완성·운영 중</option><option value="wip">● 주황 — 작업 중</option></select></label>
+    <label>상태 글씨<textarea id="fStatusText" maxlength="80" rows="2" style="min-height:0"></textarea></label>
+    <label>설명<textarea id="fDesc" maxlength="300"></textarea></label></div>
+    <div class="row"><button type="button" class="btn left" id="fReset">처음 값으로</button><button type="button" class="btn" id="fCancel">취소</button><button type="submit" class="btn pri">저장</button></div>
+  </form></div>
+  <div class="toast" id="toast"></div>
+
+  <footer class="priv">
+    새 프로그램을 만들면 Claude에게 "포털에 추가해 줘"라고 하면 카드가 붙습니다. · 최종 정리 2026-11-11
+  </footer>
+</div>
+
+<script>
+const ACCESS = {pub:'🌐 외부 공개', soon:'⏳ 공개 예정', me:'🔒 내 전용'};
+const ICONS = {
+  wall:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v14H3v4h18v-4h-8"/><path d="M7 17h6"/><path d="M11 3v14"/></svg>',
+  elev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18"/><path d="M3 15l5-4 4 3 5-6 4 3"/><path d="M3 19v-4M8 19v-8M12 19v-5M17 19V8M21 19v-8"/></svg>',
+  rain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1A4 4 0 0 1 17 15"/><path d="M8 18l-1 2M12 18l-1 2M16 18l-1 2"/></svg>',
+  found:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v12"/><path d="M12 4l-5-1M12 4l5-1"/><path d="M2 14h20"/><path d="M6 14l-2 6h16l-2-6"/></svg>',
+  turbine:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="1.5"/><path d="M12 7.5V2M13.3 9.8l4.7 2.7M10.7 9.8 6 12.5"/><path d="M12 10.5V22M9 22h6"/></svg>',
+  layout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.3"/><circle cx="16" cy="8" r="1.3"/><circle cx="8" cy="16" r="1.3"/><circle cx="16" cy="16" r="1.3"/><circle cx="12" cy="12" r="1.3"/></svg>',
+  opt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 20V12M10 20V8M15 20v-5M20 20V4"/></svg>',
+  permit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 14l2.5 2.5L16 11"/></svg>',
+  wave:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M2 20c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M4 9h9a3 3 0 1 0-3-3"/></svg>'
+};
+
+const CATS = {
+  civil:{name:'구조계산', color:'var(--c-civil)'},
+  hydro:{name:'수리계산', color:'var(--c-hydro)'},
+  wind:{name:'풍력 발전량·배치', color:'var(--c-wind)'},
+  dash:{name:'모니터링 대시보드', color:'var(--c-dash)'}
+};
+
+const TOOLS = [
+  {cat:'civil', icon:'wall', id:'wall', name:'옹벽 설계도구 (KDS 대조본)', access:'pub', status:'ok', statusText:'L형 표준도 완료 · 역T형 진행',
+   desc:'L형·역T형 옹벽 구조계산과 도면 그리기. KDS 기준 대조 포함.',
+   tags:'옹벽 구조계산 도면 KDS L형 역T형 표준도',
+   links:[{t:'열기',u:'https://claude.ai/artifact/EyPJJxVHVTQmAS1DUddspQ',p:1},{t:'공개 주소',u:'https://i2sea.github.io/retaining-wall-tool/'},{t:'저장소',u:'https://github.com/i2sea/retaining-wall-tool'}]},
+  {cat:'civil', icon:'elev', id:'wall-elev', name:'옹벽 전개도', access:'me', status:'wip', statusText:'작업 중',
+   desc:'옹벽 전개도 그리기. 위치조서 방식 수량 산출, 이후 구조계산 수량과 연계 예정.',
+   tags:'옹벽 전개도 위치조서 수량',
+   links:[{t:'열기',u:'https://claude.ai/artifact/Fc1vqZzCYQtSyr2cbngupY',p:1},{t:'저장소',u:'https://github.com/i2sea/retaining-wall-elevation-tool'}]},
+  {cat:'hydro', icon:'rain', id:'storm', name:'우수 수리계산서', access:'pub', status:'wip', statusText:'작업 중',
+   desc:'우수 수리계산서 V5.0 양식을 기초로 최신 기준식으로 계산하고 도면까지 출력.',
+   tags:'우수 수리계산 강우강도 배수 관거',
+   links:[{t:'열기',u:'https://claude.ai/artifact/RZzpRmBJQmQsMDf7gS4c4U',p:1},{t:'공개 주소',u:'https://i2sea.github.io/stormwater-tool/'},{t:'저장소',u:'https://github.com/i2sea/stormwater-tool'}]},
+  {cat:'civil', icon:'found', id:'foundation', name:'해상풍력발전기 기초 설계도구', access:'pub', status:'wip', statusText:'작업 중 · 최근 수정 11/11',
+   desc:'중력식·모노파일 기초 크기·형상을 잡아 안정 검토. 터빈 기종 선택. 공개판은 현장 자료를 빼고 파일 가져오기로 사용.',
+   tags:'해상풍력 기초 중력식 자켓 터빈 하부구조물',
+   links:[{t:'열기',u:'https://claude.ai/artifact/8co9y8ocQfGvqhyHJwnLCe',p:1},{t:'공개 주소',u:'https://i2sea.github.io/offshore-wind-foundation-tool/'},{t:'저장소',u:'https://github.com/i2sea/offshore-wind-foundation-tool'}]},
+  {cat:'wind', icon:'turbine', id:'wind', name:'발전량 계산 도구', access:'pub', status:'wip', statusText:'작업 중',
+   desc:'풍황자료 PDF에서 자료를 추려 발전량을 자동 계산. 구역·배치·보고서 기능 포함. 제조사 출력곡선은 터빈 파일 가져오기로 사용.',
+   tags:'발전량 풍황 AEP 풍력 에너지 터빈 배치 최적 배치 청사포',
+   links:[{t:'열기',u:'https://claude.ai/artifact/6ZAKydtxmpxdLpGwC3bEtM',p:1},{t:'공개 주소',u:'https://i2sea.github.io/wind-energy-tool/'},{t:'저장소',u:'https://github.com/i2sea/wind-energy-tool'}]},
+  {cat:'dash', icon:'permit', id:'permit', name:'발전사업 허가·취소 통합 대시보드', access:'pub', status:'ok', statusText:'운영 중 · 자동 갱신',
+   desc:'전기위원회 자료를 직접 수집해 해상풍력 발전사업 허가 진행·취소 현황, 환경영향평가·입찰 정보를 보여줌.',
+   tags:'허가 취소 전기위원회 발전사업 대시보드 korec 환경영향평가 입찰',
+   links:[{t:'열기',u:'https://claude.ai/artifact/7etkF7szupp5a4oTCrq9sB',p:1},{t:'공개 주소',u:'https://i2sea.github.io/power-permit-dashboard/'},{t:'저장소',u:'https://github.com/i2sea/power-permit-dashboard'}]},
+  {cat:'wind', icon:'wave', id:'marine', name:'해양 바람·파랑 관측 대시보드', access:'pub', status:'ok', statusText:'운영 중',
+   desc:'전국 해양 관측 지점을 지도에 실시간 표시. 지점별 기간을 골라 기상청 자료 다운로드.',
+   tags:'해양기상 바람 파랑 관측 기상청 부이 지도',
+   links:[{t:'공개 주소',u:'https://i2sea.github.io/marine-weather-dashboard/',p:1},{t:'저장소',u:'https://github.com/i2sea/marine-weather-dashboard'},{t:'구성·운영 정리',u:'https://claude.ai/artifact/HVPHDMZGTmzfAae6CtCeqj'}]}
+];
+
+let cat = 'all', pubOnly = false;
+try{ cat = localStorage.getItem('portal-cat') || 'all'; }catch(e){}
+
+// 공개 주소(GitHub Pages)로 열면 window.claude 없음 → 공개 화면: 외부 공개 프로그램만, claude.ai 링크 숨김, 편집 없음
+const PUBLIC=!(window.claude&&window.claude.use);
+if(PUBLIC) document.body.classList.add('public');
+// 공개판에 굳혀 넣은 편집 내용 (claude.ai 저장소의 portal/overrides를 GitHub에 올릴 때 복사)
+const BAKED=/*BAKED*/{"foundation": {"desc": "중력식·모노파일 기초 크기·형상을 잡아 안정 검토. 터빈 기종 선택. 공개판은 현장 자료를 빼고 파일 가져오기로 사용.", "name": "해상 풍력발전기 기초 설계", "status": "wip", "statusText": "작업 중 · 최근 수정 11/11"}, "marine": {"desc": "전국 해양 관측 지점을 지도에 실시간 표시. \n지점별 기간을 골라 기상청 자료 다운로드.", "name": "해양 바람·파랑 관측자료", "status": "ok", "statusText": "운영 중"}, "permit": {"desc": "전기위원회 자료를 직접 수집해 \n해상풍력 발전사업 허가 진행·취소 현황을 보여줌", "name": "발전사업 \n허가·취소·진행사항\n통합 대시보드", "status": "ok", "statusText": "운영 중 · 자동 갱신"}, "storm": {"desc": "계산하고 도면 출력.", "status": "ok", "statusText": "V1.0"}, "wall": {"desc": "L형·역L형·역T형 옹벽 구조계산과 도면 그리기.\nKDS 기준 대조 포함.", "name": "옹벽 설계\n(KDS 대조본)", "status": "ok", "statusText": "V1.0"}, "wall-elev": {"desc": "옹벽 전개도 그리기. 위치조서 방식 수량 산출, 이후 구조계산 수량과 연계 예정.", "name": "옹벽 전개도 작성", "status": "wip", "statusText": "작업 중"}, "wind": {"desc": "발전량을 자동 계산.\n구역·배치·보고서 기능 포함. \n제조사 출력곡선은 필요.", "name": "풍력발전기 발전량 계산", "status": "wip", "statusText": "작업 중"}}/*END*/;
+let OV=JSON.parse(JSON.stringify(BAKED)), CAN_EDIT=false, DB=null, EDIT_KIND='card';
+const PAGE0={title:document.getElementById('pgTitle').textContent, sub:document.getElementById('pgSub').textContent};
+const pageEff=()=>Object.assign({},PAGE0,OV._page||{});
+function renderHead(){const p=pageEff(); document.getElementById('pgTitle').textContent=p.title; document.getElementById('pgSub').textContent=p.sub; document.title=p.title.replace(/\s*\n\s*/g,' '); document.getElementById('pgEdit').style.display=CAN_EDIT?'':'none';}
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eff=t=>Object.assign({},t,OV[t.id]||{});
+function card(t0){
+  const t=eff(t0);
+  let L=t.links; if(PUBLIC){ L=L.filter(l=>!/claude\.ai/.test(l.u)).map((l,i)=>({...l,p:i===0})); }
+  const links = L.map(l=>`<a href="${l.u}" target="_blank" rel="noopener" class="${l.p?'primary':''}">${l.t} ↗</a>`).join('');
+  return `<article class="card ${t.cat}${CAN_EDIT?' editable':''}"><span class="access ${t.access}">${ACCESS[t.access]}</span>
+    <div class="top"><div class="icon">${ICONS[t.icon]}</div>
+      <div><h3>${esc(t.name)}</h3><div class="status ${t.status==='ok'?'ok':'wip'}">● ${esc(t.statusText)}</div></div></div>
+    <p class="desc">${esc(t.desc)}</p>
+    <div class="links">${links}</div>${CAN_EDIT?`<button class="edit" data-id="${t.id}" type="button">✏️ 편집</button>`:''}
+  </article>`;
+}
+
+function render(){
+  renderHead();
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const box = document.getElementById('sections');
+  let html = '', n = 0;
+  for(const k of Object.keys(CATS)){
+    if(cat!=='all' && cat!==k) continue;
+    const items = TOOLS.filter(t=>t.cat===k && (!PUBLIC || t.access==='pub') && (!pubOnly || t.access==='pub') && (!q || (eff(t).name+' '+t.name+' '+eff(t).desc+' '+eff(t).statusText+' '+t.tags).toLowerCase().includes(q)));
+    if(!items.length) continue;
+    n += items.length;
+    html += `<section><h2><span class="dot" style="background:${CATS[k].color}"></span>${CATS[k].name} · ${items.length}</h2><div class="grid">${items.map(card).join('')}</div></section>`;
+  }
+  box.innerHTML = html;
+  document.getElementById('empty').style.display = n ? 'none' : 'block';
+  document.querySelectorAll('.chip[data-cat]').forEach(c=>c.classList.toggle('on', c.dataset.cat===cat));
+}
+
+document.getElementById('chips').addEventListener('click', e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  cat = b.dataset.cat;
+  try{ localStorage.setItem('portal-cat', cat); }catch(e){}
+  render();
+});
+document.getElementById('q').addEventListener('input', render);
+document.getElementById('pubf').addEventListener('click', e=>{ pubOnly=!pubOnly; e.currentTarget.classList.toggle('on',pubOnly); render(); });
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600);}
+let EDIT_ID=null;
+const $=id=>document.getElementById(id);
+document.getElementById('sections').addEventListener('click',e=>{
+  const b=e.target.closest('.edit'); if(!b||!CAN_EDIT) return;
+  const t0=TOOLS.find(x=>x.id===b.dataset.id); const t=eff(t0); EDIT_ID=t0.id;
+  $('dlgTitle').textContent='카드 편집'; $('fName').value=t.name; EDIT_KIND='card';
+  $('cardFields').style.display='flex'; $('fSubWrap').style.display='none';
+  $('fStatus').value=t.status==='ok'?'ok':'wip'; $('fStatusText').value=t.statusText; $('fDesc').value=t.desc;
+  $('modal').classList.add('on'); $('fName').focus();
+});
+$('pgEdit').addEventListener('click',()=>{ if(!CAN_EDIT) return; const p=pageEff(); EDIT_KIND='page'; EDIT_ID=null;
+  $('dlgTitle').textContent='페이지 제목 편집'; $('fName').value=p.title; $('fSub').value=p.sub;
+  $('cardFields').style.display='none'; $('fSubWrap').style.display='flex'; $('modal').classList.add('on'); $('fName').focus(); });
+const close=()=>{$('modal').classList.remove('on');EDIT_ID=null;};
+$('fCancel').addEventListener('click',close);
+$('modal').addEventListener('click',e=>{if(e.target.id==='modal')close();});
+async function saveOv(next,msg){
+  try{ await DB.doc('portal/overrides').set({items:next,updatedAt:Date.now()}); OV=next; render(); toast(msg); close(); }
+  catch(err){ toast('저장하지 못했습니다. 잠시 후 다시 해 보세요.'); }
+}
+$('dlg').addEventListener('submit',e=>{
+  e.preventDefault(); if(!DB||(EDIT_KIND==='card'&&!EDIT_ID)) return;
+  const nm=$('fName').value.trim();
+  if(!nm){toast('제목을 비우지 마세요.');return;}
+  const next=Object.assign({},OV);
+  if(EDIT_KIND==='page'){ next._page={title:nm, sub:$('fSub').value.trim()}; saveOv(next,'저장했습니다.'); return; }
+  const st=$('fStatusText').value.trim(), ds=$('fDesc').value.trim();
+  if(!st||!ds){toast('상태 글씨와 설명을 비우지 마세요.');return;}
+  next[EDIT_ID]={name:nm,status:$('fStatus').value,statusText:st,desc:ds};
+  saveOv(next,'저장했습니다.');
+});
+$('fReset').addEventListener('click',()=>{
+  if(!DB) return; const next=Object.assign({},OV); if(EDIT_KIND==='page') delete next._page; else { if(!EDIT_ID) return; delete next[EDIT_ID]; }
+  saveOv(next,'처음 값으로 되돌렸습니다.');
+});
+// claude.ai 안에서 열었을 때만: 저장된 수정 내용 불러오기, 주인이면 편집 켜기 (공개 주소에서는 window.claude 없음 → 읽기 전용)
+(async()=>{
+  if(!(window.claude&&window.claude.use)) return;
+  try{
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!db) return; DB=db;
+    let owner=false; try{owner=!!(user&&await user.isOwner());}catch(e){}
+    db.doc('portal/overrides').onSnapshot(snap=>{
+      const ex=snap&&(typeof snap.exists==='function'?snap.exists():snap.exists);
+      const d=ex?(typeof snap.data==='function'?snap.data():snap.data):null;
+      OV=(d&&d.items&&typeof d.items==='object')?d.items:{}; render();
+    },()=>{});
+    if(owner){CAN_EDIT=true; $('editnote').style.display='block'; render();}
+  }catch(e){}
+})();
+render();
+</script>
+</body>
+</html>
